@@ -37,15 +37,41 @@ class Monster:
         pixels = lab.reshape((-1, 3))[valid_mask]
 
         # Cluster pixels
-        clusterer = KMeans(n_clusters=3)
+        clusterer = KMeans(n_clusters=3, n_init=10)
         cluster_labels = clusterer.fit_predict(pixels)
-        centers = clusterer.cluster_centers_
-        weights = np.bincount(cluster_labels, minlength=3) / len(pixels)
 
+        self.pixels, self.cluster_labels, self.centers = self.refine_clusters(pixels, cluster_labels,
+                                                                              clusterer.cluster_centers_)
+
+        weights = np.bincount(cluster_labels, minlength=3) / len(pixels)
         ordered_labels = np.argsort(weights)[::-1]
-        self.centers = centers[ordered_labels]
+
+        self.centers = self.centers[ordered_labels]
         self.weights = weights[ordered_labels]
-        self.weights = self.weights / np.sqrt(np.sum(self.weights**2))
+        self.weights = self.weights / self.weights.sum()
+
+    def refine_clusters(self, pixels, labels, centers, sigma_mult=2.0):
+        refined_pixels = []
+        refined_labels = []
+
+        for i in range(len(centers)):
+
+            idx = np.where(labels == i)[0]
+            cluster_points = pixels[idx]
+            center = centers[i]
+
+            distances = np.linalg.norm(cluster_points - center, axis=1)
+
+            avg_dist = np.mean(distances)
+            std_dist = np.std(distances)
+
+            threshold_dist = avg_dist + std_dist * sigma_mult
+            keep_indices = idx[distances <= threshold_dist]
+
+            refined_pixels.append(pixels[keep_indices])
+            refined_labels.append(labels[keep_indices])
+
+        return np.vstack(refined_pixels), np.concatenate(refined_labels), centers
 
     def print(self):
         print(f"--- {self.name} ---")
