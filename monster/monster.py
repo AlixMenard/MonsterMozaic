@@ -15,12 +15,13 @@ class Monster:
     def get_pixels(self, basesize:int):
         # Get image in different spaces, filter alpha 0 out
         bgr = self.image[:, :, :3]
+        self.picture = bgr.copy()
+        bgr = cv2.blur(bgr, (5,5))
         lab = cv2.cvtColor(bgr, cv2.COLOR_BGR2LAB)
         alpha = self.image[:, :, 3]
         bgr[alpha == 0] = [0, 0, 0]
 
         # Get picture without background
-        self.picture = bgr.copy()
         self.picture[alpha == 0] = [255, 255, 255]
         self.picture = cv2.resize(self.picture, (basesize, int(basesize*2.5)))
         self.half_picture = cv2.resize(self.picture, None, fx=0.5, fy=0.5)

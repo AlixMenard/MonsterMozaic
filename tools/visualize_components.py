@@ -40,8 +40,12 @@ def Visualize_components():
             cv2.putText(image, f"{weight:.2f}", (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX,
                         font_size, text_color, font_thick)
 
-    cv2.namedWindow("image", cv2.WINDOW_NORMAL)
-    cv2.imshow("image", image)
-    cv2.waitKey(0)
-    cv2.imwrite("visuals/components.png", image)
+    L = len(monsters)
+    num_images = L // 5 + int(L%5!=0)
+    for i in range(num_images):
+        smaller = image[:,i * 5 * baseline:(i + 1) * 5 * baseline,:]
+        cv2.imwrite(f"visuals/components/components_{i}.png", smaller)
+        # cv2.namedWindow("image", cv2.WINDOW_NORMAL)
+        # cv2.imshow("image", smaller)
+        # cv2.waitKey(0)
     cv2.destroyAllWindows()
