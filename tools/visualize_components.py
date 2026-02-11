@@ -43,4 +43,5 @@ def Visualize_components():
     cv2.namedWindow("image", cv2.WINDOW_NORMAL)
     cv2.imshow("image", image)
     cv2.waitKey(0)
+    cv2.imwrite("visuals/components.png", image)
     cv2.destroyAllWindows()

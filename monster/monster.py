@@ -23,6 +23,7 @@ class Monster:
         self.picture = bgr.copy()
         self.picture[alpha == 0] = [255, 255, 255]
         self.picture = cv2.resize(self.picture, (basesize, int(basesize*2.5)))
+        self.half_picture = cv2.resize(self.picture, None, fx=0.5, fy=0.5)
 
         # Detect edges
         edges = cv2.Canny(bgr, 50, 150)
