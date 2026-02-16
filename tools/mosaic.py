@@ -37,7 +37,7 @@ def get_local_cost(r, c, array, distances):
     return local_energy
 
 
-def mosaic(compo: dict):
+def mosaic(compo: dict, num_swaps: int = 10**5):
     list_monsters = os.listdir("img")
     monsters = [Monster(file) for file in list_monsters]
     monster_names = [monster.name for monster in monsters]
@@ -65,12 +65,12 @@ def mosaic(compo: dict):
         m[i % 2, i // 2] = monster_idx
 
     curr_c = cost(m, distances)
-    print(f"Initial cost: {curr_c}")
+    # print(f"Initial cost: {curr_c}")
 
     T = 1.0  # Temperature
     cooling = 0.9999
 
-    for _ in range(100000):
+    for _ in range(num_swaps):
         r1, c1 = np.random.randint(0, 2), np.random.randint(0, width)
         r2, c2 = np.random.randint(0, 2), np.random.randint(0, width)
 
@@ -91,7 +91,7 @@ def mosaic(compo: dict):
 
         T *= cooling
 
-    print(f"Final cost: {curr_c}")
+    # print(f"Final cost: {curr_c}")
 
     # Convert indices back to monster objects
     final_m = np.empty((2, width), dtype=object)
@@ -100,7 +100,7 @@ def mosaic(compo: dict):
             idx = m[i, j]
             final_m[i, j] = monsters[idx] if idx != -1 else None
 
-    return final_m
+    return final_m, curr_c
 
 
 def show_mosaic(m):
